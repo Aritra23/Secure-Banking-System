@@ -1,0 +1,25 @@
+ashwin$ openssl req -x509 -newkey rsa:2048 -keyout key.pem -out
+cert.pem -days 1000
+Generating a 2048 bit RSA private key
+.........................+++
+...............................................................................................+++
+writing new private key to 'key.pem'
+Enter PEM pass phrase: <group5>
+Verifying - Enter PEM pass phrase: <group5>
+-----
+You are about to be asked to enter information that will be
+incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or
+a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:US
+State or Province Name (full name) [Some-State]:AZ
+Locality Name (eg, city) []:Tempe
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:ASU
+Organizational Unit Name (eg, section) []:CIDSE
+Common Name (e.g. server FQDN or YOUR name) []:group5
+Email Address []:akvasani@asu.edu

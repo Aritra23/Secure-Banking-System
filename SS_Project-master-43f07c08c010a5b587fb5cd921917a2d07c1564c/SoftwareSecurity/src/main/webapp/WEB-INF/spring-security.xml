@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/security
+     http://www.springframework.org/schema/security/spring-security-3.2.xsd
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
+
+	<http use-expressions="true">
+		<intercept-url pattern="/" access="permitAll" />
+		<intercept-url pattern="/403" access="permitAll" />
+	    <intercept-url pattern="/aboutus" access="permitAll" />
+		<intercept-url pattern="/getunauthuserotp" access="isAnonymous()" />
+		<intercept-url pattern="/validateSignUpOTP" access="isAnonymous()" />
+		<intercept-url pattern="/login" access="isAnonymous()" />
+		<intercept-url pattern="/signup" access="isAnonymous()" />
+		<intercept-url pattern="/regenerateSignUpOTP" access="isAnonymous()" />
+		<intercept-url pattern="/logout" access="isAnonymous()" />
+		<intercept-url pattern="/addUser" access="isAnonymous()" />
+		<intercept-url pattern="/forgotpassword" access="isAnonymous()" />
+		<!-- Add security checks here -->
+
+
+		<intercept-url pattern="/employee" access="hasRole('INT_REMP')" />
+		<intercept-url pattern="/getotp"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />
+		<intercept-url pattern="/authorize"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />			
+		<intercept-url pattern="/validateOTP"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />
+		<intercept-url pattern="/other/**" access="isAuthenticated()" />
+		<intercept-url pattern="/updateProfile" access="permitAll" />
+		<intercept-url pattern="/deleteProfile" access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />
+		
+		<!-- Authenticated user -->
+
+		<!-- Ext_Customer -->
+		<intercept-url pattern="/customer"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />
+		<intercept-url pattern="/CacountDetails"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />
+		<intercept-url pattern="/Cauthorize"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />
+		<intercept-url pattern="/CrecentTransaction"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />
+		<intercept-url pattern="/CnewTransaction"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />
+		<intercept-url pattern="/CdebitOrCreditTransaction"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />
+		<intercept-url pattern="/CfundTransfer"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT')" />
+		<intercept-url pattern="/CReceiveFund" access="hasRole('EXT_MERCHANT')" />
+
+		<intercept-url pattern="/editProfile"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT', 'INT_REMP', 'INT_MEMP', 'INT_AEMP')" />
+			
+		<intercept-url pattern="editpassword"
+			access="hasAnyRole('EXT_CUSTOMER', 'EXT_MERCHANT', 'INT_REMP', 'INT_MEMP', 'INT_AEMP')" />
+
+		<!-- System Manager -->
+		<intercept-url pattern="/manager/**" access="hasRole('INT_MEMP')" />
+		<intercept-url pattern="/pending" access="hasRole('INT_MEMP')" />
+		<intercept-url pattern="/manager" access="hasRole('INT_MEMP')" />
+		<intercept-url pattern="/manager/UPrequest" access="hasRole('INT_MEMP')" />
+		<intercept-url pattern="/manager/CTrequest" access="hasRole('INT_MEMP')" />
+		<intercept-url pattern="/manager/updateuserprofile"
+			access="hasRole('INT_MEMP')" />
+		<intercept-url pattern="/useraccounts" access="hasRole('INT_MEMP')" />
+		<intercept-url pattern="/accesstransaction"
+			access="hasRole('INT_MEMP')" />
+		<intercept-url pattern="/deleteAccount" access="hasRole('INT_MEMP')" />
+
+		<!-- System admin -->
+		<intercept-url pattern="/admin/**" access="hasRole('INT_AEMP')" />
+		<intercept-url pattern="/admin" access="hasRole('INT_AEMP')" />
+		<intercept-url pattern="/Auseraccounts" access="hasRole('INT_AEMP')" />
+		<intercept-url pattern="/sysLog" access="hasRole('INT_AEMP')" />
+		<intercept-url pattern="/accessIntUserAcc" access="hasRole('INT_AEMP')" />
+		<intercept-url pattern="/piiRequest" access="hasRole('INT_AEMP')" />
+		<intercept-url pattern="/admin/useraccount" access="hasRole('INT_AEMP')" />
+		<intercept-url pattern="/admin/merchantaccount" access="hasRole('INT_AEMP')" />
+		<intercept-url pattern="/admin/employeeaccount" access="hasRole('INT_AEMP')" />
+		<intercept-url pattern="/admin/manageraccount" access="hasRole('INT_AEMP')" />
+		<intercept-url pattern="/admin/addInternalUser" access="hasRole('INT_AEMP')" />
+		<access-denied-handler error-page="/403" />
+		<form-login login-page='/login' login-processing-url="/j_spring_security_check"
+			default-target-url="/" always-use-default-target="false"
+			authentication-failure-url="/login?error=true"
+			username-parameter="username" password-parameter="password" />
+		<logout logout-url="/logout" logout-success-url="/logoutSuccessful"
+			delete-cookies="JSESSIONID" invalidate-session="true"/>
+
+		<session-management session-fixation-protection="newSession">
+			<concurrency-control expired-url="/loginafterfailure" max-sessions="1" error-if-maximum-exceeded="false" />
+		</session-management>
+	</http>
+
+	<authentication-manager>
+		<!-- Select users and user_roles from database -->
+		<authentication-provider>
+			<jdbc-user-service data-source-ref="myDataSource"
+				users-by-username-query="select user_name, secret,enabled from ss_user where  user_name =? and DATE_ADD(time_stamp, INTERVAL 1 MINUTE) >= NOW();"
+				authorities-by-username-query="select user_name,role from ss_user Join ss_user_role where ss_user.user_id = ss_user_role.user_id and user_name=?;" />
+		</authentication-provider>
+	</authentication-manager>
+</beans:beans>

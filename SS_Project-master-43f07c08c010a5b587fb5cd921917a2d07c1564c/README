@@ -1,0 +1,46 @@
+General rules:
+0. Always work on a Issue (Let's try to be little professional :P). Create one if not created. 
+1. Create your own branch for the issue. Branch Name (Issue-XXXX)
+2. Write a issue number in the commit message. (Easy to track)
+3. Create a merge request for the push which needs to be merge on master.
+4. Let's not merge the commit without any review (This least will avoid overflow issue)
+
+PS: Need help to write a script which upload code on vLab sever.
+
+Git Related issues:
+1. Moved to master branch
+$git checkout master
+
+2. Create new branch
+$git check -b Issue-xx
+
+3. Uncommited Changes
+$git diff
+
+4. How to commit:
+$git add /path/to/files
+$git commit -s
+
+5. Ammend changes in previous commit message
+$git commit --amaned
+
+6. Check diff of added files
+$git diff --cached
+
+7. Check previous commit log
+$git log
+
+8. Check previous commit detail log
+$git log -p
+
+9. Merge master to your branch
+$git merge --ff master
+
+10. How to resolve merge conflicts:
+$git diff
+Find changes with "Head>>>>>>>>>" & "<<<<<<<<master"
+Resolve those changes.
+git add /path/to/changed/files
+git commit -s
+
+

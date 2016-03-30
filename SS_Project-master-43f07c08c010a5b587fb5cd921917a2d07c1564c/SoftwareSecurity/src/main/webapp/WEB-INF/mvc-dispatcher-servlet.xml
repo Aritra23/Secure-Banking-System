@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**/*" />
+			<bean id="webContentInterceptor"
+				class="org.springframework.web.servlet.mvc.WebContentInterceptor">
+				<property name="cacheSeconds" value="0" />
+				<property name="useExpiresHeader" value="true" />
+				<property name="useCacheControlHeader" value="true" />
+				<property name="useCacheControlNoStore" value="true" />
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/pages/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<context:component-scan base-package="com.asu.cse" />
+
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/ssgroup5" />
+		<property name="username" value="root" />
+		<property name="password" value="AsAmNsKkKgroup5" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>
+					com.asu.cse.model.SSUser
+				</value>
+				<value>
+					com.asu.cse.model.SSUserRole
+				</value>
+				<value>
+					com.asu.cse.model.SSOTP
+				</value>
+				<value>
+					com.asu.cse.model.Account
+				</value>
+				<value>
+					com.asu.cse.model.SSAccessManagement
+				</value>
+				<value>
+					com.asu.cse.model.SSFundTransaction
+				</value>
+				<value>
+					com.asu.cse.model.SSProfileTransaction
+				</value>
+				<value>
+					com.asu.cse.model.SSTransactionManagement
+				</value>
+				<value>
+					com.asu.cse.model.SSTransactionType
+				</value>
+				<value>
+					com.asu.cse.model.SSUserManagement
+				</value>
+				<value>
+					com.asu.cse.model.SSPII
+				</value>
+				<value>
+					com.asu.cse.model.FileUpload
+				</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="persistenceExceptionTranslationPostProcessor"
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+	<bean id="userDao" class="com.asu.cse.dao.UserDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="userRoleDao" class="com.asu.cse.dao.UserRoleDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="userService" class="com.asu.cse.service.UserServiceImpl">
+	</bean>
+
+	<bean id="accountDao" class="com.asu.cse.dao.AccountDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+	<bean id="accountService" class="com.asu.cse.service.AccountServiceImpl">
+	</bean>
+
+	<bean id="sSProfileTransactionDao" class="com.asu.cse.dao.SSProfileTransactionDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="ssProfileTransactionService" class="com.asu.cse.service.SSProfileTransactionServiceImpl">
+	</bean>
+	<bean id="ssTransactionTypeDao" class="com.asu.cse.dao.SSTransactionTypeDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="ssTransactionTypeService" class="com.asu.cse.service.SSTransactionTypeServiceImpl">
+	</bean>
+	<bean id="ssotp" class="com.asu.cse.dao.SSOTPDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="sendEmail" class="com.asu.cse.service.SendEmailServiceImpl">
+	</bean>
+	<bean id="signUpValidator" class="com.asu.cse.validator.signUpValidation">
+	</bean>
+	<bean id="editProfileTransactionValidator" class="com.asu.cse.validator.editProfileTransactionValidation">
+	</bean>
+	<bean id="FileUploadValidator" class="com.asu.cse.validator.FileUploadValidator">
+	</bean>
+	<bean id="ssUserManagementDao" class="com.asu.cse.dao.SSUserManagementDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="ssUserManagementService" class="com.asu.cse.service.SSUserManagementServiceImpl">
+	</bean>
+
+	<!-- <bean id="ssFundTransactionDao" class="com.asu.cse.dao.SSFundTransactionDaoImpl"> 
+		<property name="sessionFactory" ref="sessionFactory" /> </bean> -->
+
+	<bean id="ssFundTransactionService" class="com.asu.cse.service.SSFundTransactionServiceImpl">
+	</bean>
+	<bean id="piiService" class="com.asu.cse.service.SSPIIServiceImpl">
+	</bean>
+	<bean id="piiDao" class="com.asu.cse.dao.SSPIIDaoImpl">
+	</bean>
+	
+
+</beans>
